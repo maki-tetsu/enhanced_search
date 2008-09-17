@@ -67,15 +67,15 @@ class EnhancedSearchTest < Test::Unit::TestCase
     end
   end
 
-  def test_optional_conditions
-    Person.search(:optional_conditions => ['sex = ?', 'male']).each do |person|
+  def test_additional_conditions
+    Person.search(:additional_conditions => ['sex = ?', 'male']).each do |person|
       assert_equal('male', person.sex)
     end
   end
 
-  def test_optional_conditions_with_columns
+  def test_additional_conditions_with_columns
     Person.search(:columns => { 'area' => %w(1 2 3 4) },
-                  :optional_conditions => ['sex = ?', 'male']).each do |person|
+                  :additional_conditions => ['sex = ?', 'male']).each do |person|
       assert_equal('male', person.sex)
     end
   end

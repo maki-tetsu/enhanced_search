@@ -217,7 +217,7 @@ module MakiTetsu #:nodoc:
           #     追加されるので、それぞれ上限値、下限値を設定します。
           #   <tt>:order</tt>::
           #     並び順を配列で指定します(MakiTetsu::Enhanced::Search::ClassMethods)。
-          #   <tt>:optional_conditions</tt>::
+          #   <tt>:additional_conditions</tt>::
           #     EnhancedSearch で表現しにくい conditions を直接渡します。
           #
           # === 戻り値
@@ -228,15 +228,16 @@ module MakiTetsu #:nodoc:
             validate_search_options(options)
             columns = options.delete(:columns) || {}
             order   = options.delete(:order)   || self.search_order
-            optional_conditions = options.delete(:optional_conditions) || nil
+            additional_conditions = 
+              options.delete(:additional_conditions) || nil
             
             conditions = build_search_conditions(columns)
             order_expression = nil
             order_expression = order.join(' ') unless order.empty?
-            unless optional_conditions.blank?
+            unless additional_conditions.blank?
               conditions[0] += " AND " unless conditions[0].empty?
-              conditions[0] += "(#{optional_conditions.shift})"
-              conditions += optional_conditions
+              conditions[0] += "(#{additional_conditions.shift})"
+              conditions += additional_conditions
             end
 
             find_options = {
