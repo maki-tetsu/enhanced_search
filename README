@@ -1,0 +1,12 @@
+EnhancedSearch
+==============
+
+EnhancedSearch is generate useful AR.search method.
+
+Example
+=======
+
+See MakiTetsu::Enhanced::Search
+
+
+Copyright (c) 2008 Tetsuhisa MAKINO <t-makino@wacom-it.co.jp>, released under the MIT license
