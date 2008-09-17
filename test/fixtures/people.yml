@@ -1,0 +1,28 @@
+taro:
+  id: 1
+  name: 太郎
+  sex: male
+  age: 25
+  number: 123456789
+  area: 1
+jiro:
+  id: 2
+  name: 二郎
+  sex: male
+  age: 22
+  number: 123456780
+  area: 1
+hanako:
+  id: 3
+  name: 花子
+  sex: female
+  age: 18
+  number: 123456790
+  area: 3
+kazuko:
+  id: 4
+  name: 和子
+  sex: female
+  age: 28
+  number: 123456792
+  area: 4

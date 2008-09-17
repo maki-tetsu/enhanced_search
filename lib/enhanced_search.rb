@@ -44,6 +44,8 @@ module MakiTetsu #:nodoc:
     #   Eager Loading 設定
     # <tt>:aliases</tt>::
     #   検索カラムの別名定義リスト
+    # <tt>:finder</tt>::
+    #   内部で呼び出す finder の指定（デフォルト: :find）
     #
     # === 検索カラムの指定と検索手法の指定
     #
@@ -115,7 +117,7 @@ module MakiTetsu #:nodoc:
       module ClassMethods
         # 検索対象カラムの検索手法指定シンボル
         VALID_SEARCH_TYPES = [:match_full, :match_partial,
-                              :closed_scope, :opend_scope, :including]
+                              :closed_scope, :opened_scope, :including]
 
         # === 概要
         #
@@ -153,10 +155,12 @@ module MakiTetsu #:nodoc:
             cattr_accessor :search_order
             cattr_accessor :search_include
             cattr_accessor :search_aliases
+            cattr_accessor :search_finder
             self.search_columns = options[:columns] || {}
             self.search_order   = options[:order]   || []
             self.search_include = options[:include] || nil
             self.search_aliases = options[:aliases] || {}
+            self.search_finder  = options[:finder]  || :find
             validate_search_columns
           end
 
@@ -230,7 +234,8 @@ module MakiTetsu #:nodoc:
               :include => self.search_include
             }
 
-            return self.find(:all, find_options.update(options))
+            return self.send(self.search_finder,
+                             :all, find_options.update(options))
           end
 
           private
@@ -279,7 +284,7 @@ module MakiTetsu #:nodoc:
                 else
                   raise ArgumentError, "Closed scope column's value must be array"
                 end
-              when :opend_scope
+              when :opened_scope
                 if values.kind_of? Array
                   min, max = values.first, values.last
                   unless min.blank?
@@ -306,7 +311,7 @@ module MakiTetsu #:nodoc:
 
           def resolve_aliases(column)
             if self.search_aliases.has_key?(column)
-              return self.search_columns[column]
+              return self.search_aliases[column]
             end
             return column
           end
