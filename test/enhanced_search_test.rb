@@ -27,26 +27,26 @@ class EnhancedSearchTest < Test::Unit::TestCase
   end
 
   def test_search_opened_scope
-    Person.search(:columns => { 'age' => [22, nil] }).each do |person|
+    Person.search(:columns => { 'age_from' => 22, 'age_to' => nil }).each do |person|
       assert(person.age >= 22)
     end
-    Person.search(:columns => { 'age' => [nil, 20] }).each do |person|
+    Person.search(:columns => { 'age_from' => nil, 'age_to' => 20 }).each do |person|
       assert(person.age <= 20)
     end
-    Person.search(:columns => { 'age' => [22, 26] }).each do |person|
+    Person.search(:columns => { 'age_from' => 22, 'age_to' => 26 }).each do |person|
       assert(person.age >= 22)
       assert(26 >= person.age)
     end
   end
 
   def test_search_closed_scope
-    columns = { 'number' => ['123456789', nil] }
+    columns = { 'number_from' => '123456789', 'number_to' => nil }
     Person.search(:columns => columns).each do |person|
       assert_equal(123456789, person.number)
     end
     assert_equal(1, Person.search(:columns => columns).size)
 
-    columns = { 'number' => ['123456789', '123456790'] }
+    columns = { 'number_from' => '123456789', 'number_to' => '123456790' }
     Person.search(:columns => columns).each do |person|
       assert(123456789 <= person.number)
       assert(123456790 >= person.number)

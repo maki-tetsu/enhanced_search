@@ -19,16 +19,16 @@ module MakiTetsu #:nodoc:
     #
     # 以下のように enhanced_search メソッドを呼び出します。
     #   class Person < ActiveRecord::Base
-    #     enhanced_search(:columns => {:name => :match_partial,
-    #                                  :sex  => :match_full,
-    #                                  :age  => :opened_scope})
+    #     enhanced_search(:columns => {'name' => :match_partial,
+    #                                  'sex'  => :match_full,
+    #                                  'age'  => :opened_scope})
     #   end
     # 上記のように定義することで以下のような呼び出しが可能となります。
     #
     # name に太郎が含まれる人を検索
-    #   Person.search(:columns => {:name => '太郎'})
+    #   Person.search(:columns => {'name' => '太郎'})
     # name に太郎が含まれ、かつ、age が 25 以下の人を検索
-    #   Person.search(:columns => {:name => '太郎', :age => [nil, 25]})
+    #   Person.search(:columns => {'name' => '太郎', 'age_from' => nil, 'age_to' => 25})
     #
     # == 検索設定方法
     #
@@ -200,9 +200,10 @@ module MakiTetsu #:nodoc:
           #
           # === 使用例
           #
-          #   search(:columns => {'name' => 'Tom',
-          #                       'age'  => [nil, 24],
-          #                       'sex'  => 'F'})
+          #   search(:columns => {'name'     => 'Tom',
+          #                       'age_from' => nil,
+          #                       'age_to'   => 24,
+          #                       'sex'      => 'F'})
           #
           # === 引数
           #
@@ -210,8 +211,10 @@ module MakiTetsu #:nodoc:
           #   検索オプションを渡す。
           #   <tt>:columns</tt>::
           #     検索の値を項目毎にハッシュで渡します。
-          #     enhanced_search で :match_* を指定したものは値を一つ、*_scope
-          #     もしくは :including 指定した場合は配列で指定します。
+          #     enhanced_search で :match_* を指定したものは値を一つ、
+          #     :including 指定した場合は配列で指定します。
+          #     :*_scope を指定した場合は自動で _from, _to という検索値用のカラムが
+          #     追加されるので、それぞれ上限値、下限値を設定します。
           #   <tt>:order</tt>::
           #     並び順を配列で指定します(MakiTetsu::Enhanced::Search::ClassMethods)。
           #
@@ -253,6 +256,7 @@ module MakiTetsu #:nodoc:
             cond_s = []
             cond_v = []
 
+            columns = fix_scope_values(columns)
             columns.each do |column, values|
               unless self.search_columns.keys.include?(column)
                 raise ArgumentError, "Unknown column \"#{column}\" in settings"
@@ -314,6 +318,24 @@ module MakiTetsu #:nodoc:
               return self.search_aliases[column]
             end
             return column
+          end
+
+          # :*_scope を内部表現に変換する
+          def fix_scope_values(columns)
+            result = {}
+            columns.each do |key, value|
+              if /(.*)_from$/ =~ key
+                result[$1] = [nil, nil] if result[$1].nil?
+                result[$1][0] = value
+              elsif /(.*)_to$/ =~ key
+                result[$1] = [nil, nil] if result[$1].nil?
+                result[$1][1] = value
+              else
+                result[key] = value
+              end
+            end
+
+            return result
           end
         end
       end
