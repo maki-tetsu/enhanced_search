@@ -79,4 +79,13 @@ class EnhancedSearchTest < Test::Unit::TestCase
       assert_equal('male', person.sex)
     end
   end
+
+  def test_search_column_names
+    assert_not_nil(Person.search_column_names)
+    search_column_names = 
+      %w(name sex age_from age_to number_from number_to area western_male)
+    Person.search_column_names.each do |name|
+      assert(search_column_names.include?(name))
+    end
+  end
 end

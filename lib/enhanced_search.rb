@@ -250,6 +250,26 @@ module MakiTetsu #:nodoc:
                              :all, find_options.update(options))
           end
 
+          # === 概要
+          #
+          # 検索時にフォームからパラメータとしての受取可能なカラム名の一覧を
+          # 返却する
+          #
+          # call-seq:
+          #   search_column_names => Array
+          #
+          def search_column_names
+            return self.search_columns.map {|values|
+              key, value = values.first, values.last
+              case value
+              when :match_full, :match_partial, :including
+                next key
+              when :opened_scope, :closed_scope
+                next [key + '_from', key + '_to']
+              end
+            }.flatten
+          end
+
           private
 
           def validate_search_options(options)
