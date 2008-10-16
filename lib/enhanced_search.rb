@@ -353,10 +353,10 @@ module MakiTetsu #:nodoc:
           def fix_scope_values(columns)
             result = {}
             columns.each do |key, value|
-              if /(.*)_from$/ =~ key
+              if /\A(.*)_from\Z/ =~ key
                 result[$1] = [nil, nil] if result[$1].nil?
                 result[$1][0] = value
-              elsif /(.*)_to$/ =~ key
+              elsif /\A(.*)_to\Z/ =~ key
                 result[$1] = [nil, nil] if result[$1].nil?
                 result[$1][1] = value
               else
